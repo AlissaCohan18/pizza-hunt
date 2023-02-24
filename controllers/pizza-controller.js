@@ -6,6 +6,17 @@ const pizzaController = {
   // get all pizzas  (GET /api/pizzas)
   getAllPizza(req, res) {
     Pizza.find({})
+      //.populate() enables display of the comment (vs just the comment's id)
+      .populate({
+        path: "comments",
+        //the - tells mongoose that we don't care about the __v field on comments
+        //without this, it would it would *only* return the __v field
+        select: "-__v",
+      })
+      //tells the query to not include the pizza's __v field either
+      .select("-__v")
+      //sorts pizza's in descending order to show newest first
+      .sort({ _id: -1 })
       .then((dbPizzaData) => res.json(dbPizzaData))
       .catch((err) => {
         console.log(err);
@@ -16,6 +27,11 @@ const pizzaController = {
   // get one pizza by id   (GET /api/pizzas/:id)
   getPizzaById({ params }, res) {
     Pizza.findOne({ _id: params.id })
+      .populate({
+        path: "comments",
+        select: "-__v",
+      })
+      .select("-__v")
       .then((dbPizzaData) => {
         // If no pizza is found, send 404
         if (!dbPizzaData) {

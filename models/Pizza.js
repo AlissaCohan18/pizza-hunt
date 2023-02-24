@@ -2,13 +2,23 @@
 const { Schema, model } = require("mongoose");
 const dateFormat = require("../utils/dateFormat");
 
+//Note: Mongoose only executes the validators in the schema automatically when creating new data
+   //reference "runValidators: true" on controllers for PUT (update data)
+
 const PizzaSchema = new Schema(
   {
     pizzaName: {
       type: String,
+      //indicates a required field that must be filled in/cannot be left blank
+      required: true,
+      //removes white space before and after the input string
+      trim: true,
     },
     createdBy: {
       type: String,
+      //adding text after "required:" allows you to provide a custom error message
+      required: 'You need to provide a name for Created by!',
+      trim: true,
     },
     createdAt: {
       type: Date,
@@ -18,7 +28,11 @@ const PizzaSchema = new Schema(
     },
     size: {
       type: String,
-      default: "Large",
+      required: true,
+      //validate by providing an array of options that this size field will accept
+      //note: the enum option stands for enumerable
+      enum: ['Personal', 'Small', 'Medium', 'Large', 'Extra Large'],
+      default: 'Large'
     },
     toppings: [],
     comments: [
@@ -47,7 +61,10 @@ PizzaSchema.virtual("commentCount").get(function () {
   //it takes 2 parameters (accumulator/total & currentValue/comment) & then walks thru the array,
   //passing the accumulating total and the current value of comment into the function, with
   // the return of the function revising the total for the next iteration through the array
-  return this.comments.reduce((total, comment) => total + comment.replies.length + 1, 0);
+  return this.comments.reduce(
+    (total, comment) => total + comment.replies.length + 1,
+    0
+  );
 });
 
 // create the Pizza model using the PizzaSchema

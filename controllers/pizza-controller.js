@@ -55,7 +55,8 @@ const pizzaController = {
   updatePizza({ params, body }, res) {
     //setting the parameter to true instructs Mongoose to return the new version of the document
     //note: There's also .updateOne() and .updateMany(), which update documents without returning them
-    Pizza.findOneAndUpdate({ _id: params.id }, body, { new: true })
+    //"runValidators:true" should be included on any PUT to ensure validation is ran on updates
+    Pizza.findOneAndUpdate({ _id: params.id }, body, { new: true, runValidators: true })
       .then((dbPizzaData) => {
         if (!dbPizzaData) {
           res.status(404).json({ message: "No pizza found with this id!" });

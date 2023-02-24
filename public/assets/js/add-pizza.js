@@ -66,8 +66,10 @@ const handlePizzaSubmit = event => {
       alert('Pizza created successfully!');
       console.log(postResponse);
     })
+    //.catch() is only executed on network failure (when you'd want to use IndexedDB)
     .catch(err => {
       console.log(err);
+      saveRecord(formData);
     });
   
 
